@@ -12,6 +12,26 @@ What persists is configuration. Installed as an MCP server, the tools are simply
 
 ## Install
 
+> **Not published to npm yet.** The `npx` commands below are what installation
+> will look like once `aiskimo-mcp` is released. Until then, use *From source*
+> below — it works today and takes about a minute.
+
+### From source (works today)
+
+```bash
+git clone https://github.com/Mohitu/aiskimo.git
+cd aiskimo/mcp
+npm install && npm run build
+```
+
+Then point your client at the built file by absolute path:
+
+```bash
+claude mcp add aiskimo -- node /absolute/path/to/aiskimo/mcp/dist/index.js
+```
+
+### Once released
+
 **Claude Code**
 
 ```bash
