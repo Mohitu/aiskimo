@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build output
+dist/
+functions/lib/
+functions/dist/
+mcp/dist/
+*.tsbuildinfo
+
+# Secrets and local config. Nothing below this line may ever be committed:
+# this repository is public, and a Firebase project is one leaked service
+# account away from being someone else's.
+.env
+.env.local
+.env.*.local
+functions/.env
+functions/.env.*
+**/serviceAccount*.json
+**/*-firebase-adminsdk-*.json
+.firebase/
+.aiskimo/
+
+# Editor and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+firebase-debug.log*

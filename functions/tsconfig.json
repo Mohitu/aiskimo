@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
+    "moduleResolution": "node",
+    "outDir": "lib",
+    // The gateway lives in ../src and is shared verbatim. Compiling it from here
+    // rather than copying it is the whole point: there must be exactly one
+    // implementation of every rule, not one for the app and one for the server.
+    "rootDir": "..",
+    "baseUrl": "..",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "sourceMap": true
+  },
+  // Listed explicitly rather than relying on TypeScript following imports from
+  // `src/**`. It compiles either way, but an implicit graph means a refactor
+  // can quietly drop a file from the emit and the failure only shows at runtime
+  // in a deployed function.
+  "include": [
+    "src/**/*.ts",
+    "../src/domain/**/*.ts",
+    "../src/services/**/*.ts",
+    "../src/platform/**/*.ts",
+    "../src/data/mock/**/*.ts"
+  ],
+  // Tests are run by vitest from source and must never be emitted into `lib/`
+  // — a deployed function should not carry its own test suite, and the seed
+  // script is a one-off run through tsx rather than part of the bundle.
+  "exclude": ["**/*.test.ts", "lib"]
+}

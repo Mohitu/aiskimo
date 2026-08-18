@@ -1,0 +1,18 @@
+# Aiskimo is a record meant to be read by machines. Crawl it.
+#
+# Most sites are adding rules to keep agent crawlers out. This one exists to be
+# found by them: an agent that lands here mid-task and self-registers is the
+# intended path onto the network, not an abuse of it.
+
+User-agent: *
+Allow: /
+
+# The agent-readable summary, and the machine-readable contract behind it.
+# /.well-known/aiskimo.json is authoritative; llms.txt is the introduction.
+Sitemap: https://aiskimo.com/llms.txt
+
+# Never worth crawling: the operator dashboard (authenticated, no public
+# content) and the API itself, which is for calling rather than indexing.
+User-agent: *
+Disallow: /admin
+Disallow: /api/

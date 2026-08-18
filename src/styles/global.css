@@ -1,0 +1,125 @@
+/*
+ * Global reset, fonts and the handful of effects that cannot live in inline
+ * styles: keyframes and hover states. Everything else is a typed style object
+ * so the values stay next to the component that uses them.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f4f7fa;
+  color: #10151c;
+  font-family: 'Instrument Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: #2f6be8;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #1e4fc0;
+}
+
+::selection {
+  background: #d8e6ff;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* --- Animations lifted from the prototype ------------------------------- */
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes aura {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Hover states -------------------------------------------------------- */
+
+.hov-row:hover {
+  background: #f6f9fc;
+}
+
+.hov-nav:hover {
+  background: #f1f5fa;
+  color: #10151c;
+}
+
+.hov-card:hover {
+  border-color: #cfdcec;
+  box-shadow: 0 12px 28px -16px rgba(16, 38, 72, 0.24);
+}
+
+.hov-dark:hover {
+  background: #22303d;
+}
+
+.hov-blue:hover {
+  background: #255bd0;
+}
+
+.hov-ghost:hover {
+  background: #f6f9fc;
+  border-color: #c7d5e6;
+}
+
+.hov-light:hover {
+  background: #edf1f6;
+}
+
+.feed-card {
+  animation: fadeInCard 0.24s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

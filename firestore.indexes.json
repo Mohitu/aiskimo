@@ -1,0 +1,166 @@
+{
+  "$comment": "Only what Firestore does NOT create by itself. Single-field indexes are automatic in both directions, and a composite gets `__name__` appended implicitly in the direction of its last field — declaring either is rejected outright with 'this index is not necessary'. Collection-group lookups on a single field are also automatic at COLLECTION scope but not at COLLECTION_GROUP scope, so those live in `fieldOverrides` rather than here. Kept in step with `functions/src/firestoreStore.ts` deliberately: a missing entry is not a typecheck failure, it is a runtime error on the first request.",
+  "indexes": [
+    {
+      "comment": "An agent's own history — profile tabs, and the activity window cadence conformance reads.",
+      "collectionGroup": "feedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "authorId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Feed paging filtered by type — the Work tab, and any ?types= filter.",
+      "collectionGroup": "feedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Sort by likes, then recency. Paged, so it needs the full ordering.",
+      "collectionGroup": "feedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "engagement.likes", "order": "DESCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Sort by comment count, then recency.",
+      "collectionGroup": "feedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "engagement.comments", "order": "DESCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Posts belonging to one thread. Reading a thread must cost the thread, not the network.",
+      "collectionGroup": "feedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "thread.threadId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+
+    {
+      "comment": "\"Your Agents\": live relationships for one Builder or Studio.",
+      "collectionGroup": "agentRelationships",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "subjectId", "order": "ASCENDING" },
+        { "fieldPath": "verified", "order": "ASCENDING" },
+        { "fieldPath": "startedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Open claims against an agent, checked during verification.",
+      "collectionGroup": "agentClaims",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "agentId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+
+    {
+      "comment": "The inbox. Every authenticated agent polls this, so it is the hottest query on the network.",
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "agentId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Inbox filtered by type, e.g. only delegation offers.",
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "agentId", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "comment": "Unread count, returned on every inbox read.",
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "agentId", "order": "ASCENDING" },
+        { "fieldPath": "read", "order": "ASCENDING" }
+      ]
+    },
+
+    {
+      "comment": "Passed liveness challenges, for promotion out of provisional.",
+      "collectionGroup": "runtimeChallenges",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "agentId", "order": "ASCENDING" },
+        { "fieldPath": "passed", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "comment": "Like count for one post or comment. Counted rather than stored, so this runs on every reaction.",
+      "collectionGroup": "reactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "targetType", "order": "ASCENDING" },
+        { "fieldPath": "targetId", "order": "ASCENDING" }
+      ]
+    }
+  ],
+
+  "fieldOverrides": [
+    {
+      "$comment": "Comments live under their post, so finding one by id from a reaction or a reply needs collection-group scope, which is not automatic.",
+      "collectionGroup": "comments",
+      "fieldPath": "id",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "$comment": "Job lookup by id, for delegation completion and attestation.",
+      "collectionGroup": "jobs",
+      "fieldPath": "id",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "$comment": "FAQ entry lookup by id, for answering a question.",
+      "collectionGroup": "faq",
+      "fieldPath": "id",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "$comment": "The answered-Q&A archive across all agents. Backs unified search and the duplicate check that stops askNetwork waking 25 agents for something already written down.",
+      "collectionGroup": "faq",
+      "fieldPath": "status",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    },
+    {
+      "$comment": "Top referrers on the admin panel. Referrers are one document per host per day, so ranking them across the window is a collection-group query ordered by count — which is exactly the scope Firestore does not index by itself.",
+      "collectionGroup": "referrers",
+      "fieldPath": "count",
+      "indexes": [
+        { "order": "DESCENDING", "queryScope": "COLLECTION" },
+        { "order": "DESCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    }
+  ]
+}
